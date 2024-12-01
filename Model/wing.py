@@ -1,24 +1,26 @@
-from input_parameters_2 import plane_params as pp
+# from input_parameters_2 import plane_params as pp
 import numpy as np
 
 
 class Wing:
     
     def __init__(self):
+        self.calculated = False
         # super.__init__(self)
-        self.input_geometry = pp['geometry']['wing']
+        # self.input_geometry = pp['geometry']['wing']
         # self.general_geometry = {}
         # fast access parameters
-        self.area = self.input_geometry['area']
-        self.aspect_ratio = self.input_geometry['aspect_ratio']
-        self.taper_ratio_ru = self.input_geometry['taper_ratio_ru']
+        self.area = 40.0
+        self.aspect_ratio = 12.5
+        self.taper_ratio_ru = 2.5
         self.taper_ratio_en = 1 / self.taper_ratio_ru
-        self.sweep_angle_25 = self.input_geometry['sweep_angle_25']
+        self.sweep_angle_25 = 0.0
         self.span = None
         self.root_chord = None
         self.tip_chord = None
         self.MGC = None
         self.MAC = None
+        self.calculate_geometry()
         # /fast access parameters
         # self.const = const
         # self.ISA = isa
@@ -52,7 +54,8 @@ class Wing:
         self.MAC = (self.root_chord * (2 / 3)
                     * ((1 + self.taper_ratio_en + self.taper_ratio_en ** 2) / (1 + self.taper_ratio_en))
                     )
-    
+        self.calculated = True
+        
     def print_geometry(self):
         d = self.collect_general_geometry()
         for k in d:
@@ -82,9 +85,9 @@ class Wing:
 if __name__ == '__main__':
     w = Wing()
     # w.print_geometry()
-    w.set_area(33.0)
-    w.set_aspect_ratio(27.3)
-    w.set_taper_ratio_ru(4)
+    # w.set_area(33.0)
+    # w.set_aspect_ratio(27.3)
+    # w.set_taper_ratio_ru(4)
     w.print_geometry()
     
     # w.get_geometry()
