@@ -41,7 +41,7 @@ class ISA:
         self.__density = None
         self.__dynamic_viscosity = None
         self.__cinematic_viscosity = None
-        self.__engine_power_loss = None
+        self.__engine_relative_power = None
         
         self.set_altitude(0.0)
     
@@ -103,8 +103,8 @@ class ISA:
         # print(f'dynamic viscosity at {self.__altitude} = {self.__dynamic_viscosity}'
         #       f' when cinematic viscosity = {self.__cinematic_viscosity}')
     
-    def __calculate_engine_power_loss(self):
-        self.__engine_power_loss = 1 / (1.11 * self.__density / self.density_standard_SL
+    def __calculate_engine_relative_power(self):
+        self.__engine_relative_power = (1.11 * self.__density / self.density_standard_SL
                                         * math.sqrt(self.temperature_standard_SL / self.__temperature) - 0.11)
     
     def __calculate(self):
@@ -112,7 +112,7 @@ class ISA:
         self.__calculate_pressure()
         self.__calculate_density()
         self.__calculate_viscosity()
-        self.__calculate_engine_power_loss()
+        self.__calculate_engine_relative_power()
     
     '''
     +++++++++++ getters area ++++++++++++
@@ -125,7 +125,7 @@ class ISA:
                 'rho': self.__density,
                 'myu': self.__dynamic_viscosity,
                 'nyu': self.__cinematic_viscosity,
-                'rel_power': self.__engine_power_loss
+                'rel_power': self.__engine_relative_power
                 }
     
     def get_altitude(self):
@@ -146,8 +146,8 @@ class ISA:
     def get_cinematic_viscosity(self):
         return self.__cinematic_viscosity
     
-    def get_engine_power_loss(self):
-        return self.__engine_power_loss
+    def get_engine_relative_power(self):
+        return self.__engine_relative_power
     
     def get_params_by_altitude(self, altitude):
         self.set_altitude(altitude)
@@ -158,8 +158,14 @@ class ISA:
     '''
 
 #
-# if __name__ == '__main__':
-#     isa = ISA()
+if __name__ == '__main__':
+    isa = ISA()
+    p1 = isa.get_params_by_altitude(5000)#['rho']
+    p2 = isa.get_params_by_altitude(10000)#['rho']
+    
+    print(f'params at 5000: {p1}')
+    print(f'params at 10000: {p2}')
+    
 #     alt_range = np.arange(0.0, 5001.0, 1000.0)
 #     atmosphere_range = [isa.get_params_by_altitude(x) for x in alt_range]
 #     print(atmosphere_range[1]['H'])

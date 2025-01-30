@@ -2,7 +2,7 @@
 import numpy as np
 
 
-class Wing:
+class LiftingSurface:
     
     def __init__(self):
         self.calculated = False
@@ -25,8 +25,23 @@ class Wing:
         # self.const = const
         # self.ISA = isa
     
-    def set_general_geometry(self, area, aspect_ratio, taper_ratio_ru=2.0, sweep_angle_25=0.0):
+    def set_general_geometry(self, area=40, aspect_ratio=10, taper_ratio_ru=2.0, sweep_angle_25=0.0):
         self.area = area
+        self.aspect_ratio = aspect_ratio
+        self.taper_ratio_ru = taper_ratio_ru
+        self.taper_ratio_en = 1 / taper_ratio_ru
+        self.sweep_angle_25 = sweep_angle_25
+        self.calculate_geometry()
+
+    def set_general_geometry_2(self, **params):
+        self.area = params['area']
+        self.aspect_ratio = params['aspect_ratio']
+        self.taper_ratio_ru = params['taper_ratio_ru']
+        self.taper_ratio_en = 1 / self.taper_ratio_ru
+        self.sweep_angle_25 = params['sweep_angle_25']
+        self.calculate_geometry()
+        
+    def set_ratios(self, aspect_ratio, taper_ratio_ru=2.0, sweep_angle_25=0.0):
         self.aspect_ratio = aspect_ratio
         self.taper_ratio_ru = taper_ratio_ru
         self.taper_ratio_en = 1 / taper_ratio_ru
@@ -36,9 +51,15 @@ class Wing:
     def set_area(self, area):
         self.area = area
         self.calculate_geometry()
+        
+    def set_span(self, span):
+        aspect_ratio = span ** 2 / self.area
+        self.span = span
+        self.set_aspect_ratio(aspect_ratio)
     
     def set_aspect_ratio(self, aspect_ratio):
         self.aspect_ratio = aspect_ratio
+        self.calculated = False
         self.calculate_geometry()
     
     def set_taper_ratio_ru(self, taper_ratio_ru):
@@ -69,25 +90,28 @@ class Wing:
     
     def collect_general_geometry(self):
         return {
-            'area': self.area,
-            'aspect_ratio': self.aspect_ratio,
-            'taper_ratio_ru': self.taper_ratio_ru,
-            'taper_ratio_en': self.taper_ratio_en,
-            'sweep_angle_25': self.sweep_angle_25,
-            'span': self.span,
-            'root_chord': self.root_chord,
-            'tip_chord': self.tip_chord,
-            'MGC': self.MGC,
-            'MAC': self.MAC
+            'area': float(self.area),
+            'aspect_ratio': float(self.aspect_ratio),
+            'taper_ratio_ru': float(self.taper_ratio_ru),
+            'taper_ratio_en': float(self.taper_ratio_en),
+            'sweep_angle_25': float(self.sweep_angle_25),
+            'span': float(self.span),
+            'root_chord': float(self.root_chord),
+            'tip_chord': float(self.tip_chord),
+            'MGC': float(self.MGC),
+            'MAC': float(self.MAC)
         }
 
 
 if __name__ == '__main__':
-    w = Wing()
+    w = LiftingSurface()
     # w.print_geometry()
     # w.set_area(33.0)
     # w.set_aspect_ratio(27.3)
     # w.set_taper_ratio_ru(4)
+    w.print_geometry()
+    
+    w.set_span(20.0)
     w.print_geometry()
     
     # w.get_geometry()
