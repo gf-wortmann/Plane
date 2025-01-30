@@ -220,7 +220,7 @@ if __name__ == '__main__':
     # pa32 = Aerodynamics()
     # pa40 = Aerodynamics()
     hap_fw = Aerodynamics()
-    hap_fw.set_general_params("../Projects/HAP-FW/HAP-FW_f1_general_ls_params.json")
+    hap_fw.set_general_params("../Projects/P45_twin_sailplane/P45_twin_sailplane_general_ls_params.json")
     hap_fw.set_plane_geometry()
     hap_fw.set_toff_mass()
     hap_fw.set_empty_mass()
@@ -228,7 +228,7 @@ if __name__ == '__main__':
     hap_fw.set_aerodynamics()
     print(f' mass = {hap_fw.mass}kg')
     hap_fw.set_cruise_regime()
-    hap_fw.set_altitude(3000)
+    hap_fw.set_altitude(1000)
     
     # print(f'fus area = {hap_fw.geometry.fuselage_area}, fus len = {hap_fw.geometry.fuselage_length}')
     print(f'cx_0 = {hap_fw.plane_cx0_range}')
@@ -286,7 +286,7 @@ if __name__ == '__main__':
     #
     
     
-    plt.plot(hap_fw.v_range * 3.6, hap_fw.get_plane_ld_ratio_range(),
+    plt.plot(hap_fw.v_range * 3.6,  -hap_fw.v_range / hap_fw.get_plane_ld_ratio_range(),
              label=f'Wing area = {hap_fw.geometry.get_wing_area():.1f}' r'$m^2$' f' at ' f'{hap_fw.isa.get_altitude()}m')
     
         #

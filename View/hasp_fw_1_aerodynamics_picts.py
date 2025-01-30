@@ -6,6 +6,7 @@ from Model import plane_aerodynamics as pa
 
 hap_fw = pa.Aerodynamics()
 hap_fw.set_general_params("../Projects/HAP-FW/HAP-FW_f1_general_ls_params.json")
+# hap_fw.set_general_params("../Projects/P45_twin_sailplane/P45_twin_sailplane_general_ls_params.json")
 hap_fw.set_plane_geometry()
 hap_fw.set_toff_mass()
 hap_fw.set_empty_mass()
@@ -127,10 +128,12 @@ def show_ld_ratio(plane: pa, alt_range: list):
         plane.set_mass = (plane.toff_mass + plane.empty_mass) / 2
         plane.set_aerodynamics()
         ld_ratio_range = plane.get_plane_ld_ratio_range()
-        limits_ld_ratio = {"xmin": min(plane.v_range), "xmax": max(plane.v_range),
-                           "ymin": min(ld_ratio_range), "ymax": max(ld_ratio_range)}
+        limits_ld_ratio = {"xmin": min(plane.v_range * 3.6), "xmax": max(plane.v_range * 3.6)
+                           , "ymin": min(ld_ratio_range), "ymax": max(ld_ratio_range)
+                           # , "ymin": -5, "ymax": 0.1
+                           }
         ld_ratio_label = r'$K_a$' f' на высоте {alt}м'
-        plots_ld_ratio[ld_ratio_label] = [plane.v_range, ld_ratio_range]
+        plots_ld_ratio[ld_ratio_label] = [plane.v_range * 3.6, ld_ratio_range]
     graph_plot(plots_ld_ratio, limits_ld_ratio, title, xlabel, ylabel)
 
 
@@ -148,9 +151,9 @@ def graph_plot(plots, limits, plot_title="title", xlabel="xlabel", ylabel="ylabe
     # print(*plots.items())
     ax.set(title=plot_title, xlabel=xlabel, ylabel=ylabel
            , xlim=(limits["xmin"] * 0.5, limits["xmax"] * 1.1)
-           , xticks=np.arange(0, limits["xmax"] * 1.1, limits["xmax"] * 5 // 100)
-           , ylim=(0, limits["ymax"] * 1.1)
-           , yticks=np.arange(0, limits["ymax"] * 1.1, limits["ymax"] * 5 // 100 + 1)
+           , xticks=np.arange(limits["xmin"] * 5 // 100 * 10, limits["xmax"] * 11 // 10, limits["xmax"] // 100 * 10)
+           , ylim=(limits["ymin"], limits["ymax"] * 1.1)
+           , yticks=np.arange(limits["ymin"]*5 // 10, limits["ymax"] * 11 // 10, limits["ymax"] // 10 + 1)
            # , xticks=np.arange(limits["xmin"], limits, 20)
            # , yticks=2
            )

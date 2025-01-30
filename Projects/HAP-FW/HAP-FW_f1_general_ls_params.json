@@ -45,7 +45,7 @@
         "wing_laminarity": 0.5,
         "wing_cx0_imperfection": 1.2,
         "wing_area_wet_to_plan": 2.05,
-        "fuselage_cx0_imperfection": 1.8,
+        "fuselage_cx0_imperfection": 2.0,
         "fuselage_laminarity": 0.1,
         "fuselage_area": 8.0,
         "fuselage_length":  5.5,
