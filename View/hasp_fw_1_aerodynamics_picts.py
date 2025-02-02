@@ -121,7 +121,7 @@ def show_fuel_consumption(plane: pa, alt):
     }
     graph_plot(plots, limits, title, xlabel, ylabel)
     
-    title = f'{plane.general_params["project"]["project_name"]}, часовой расход топлива на крейсерском режме на высоте {plane.isa.get_altitude()}м с учетом потребления СЭС'
+    title = f'{plane.general_params["project"]["project_name"]}, часовой расход топлива на крейсерском режиме на высоте {plane.isa.get_altitude()}м с учетом потребления СЭС'
     xlabel = f'Время полета, ч'
     ylabel = f'Расход топлива, кг/ч'
     
