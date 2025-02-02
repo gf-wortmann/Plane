@@ -1,62 +1,81 @@
 {
+    "project": {
+    "project_name": "ВАП СТ"
+    },
+    "power_plant": {
+        "toff_power_kw": 73.6,
+        "toff_power": 73600,
+        "nominal_power_kw": 66.0,
+        "cruise_power_kw": 55.0,
+        "cruise_power_2_kw": 40.0,
+        "toff_fuel_consumption": 0.285,
+        "nominal_fuel_consumption": 0.275,
+        "cruise_fuel_consumption": 0.270,
+        "electric_power_consumption": 2.0,
+        "prop_effectivity": 0.8
+    },
+
+    "fuselage": {
+        "area": 7.3,
+        "length": 5.3
+    },
     "wing":
     {
-    "area": 7.70,
-    "aspect_ratio": 20.0,
-    "taper_ratio_ru": 2.0,
-    "span": 12.6,
-    "sweep_angle_25": -2
+        "area": 7.70,
+        "aspect_ratio": 20.0,
+        "taper_ratio_ru": 2.0,
+        "span": 12.6,
+        "sweep_angle_25": -2
     },
 
-    "stab":
-    {
-    "area": 1.0,
-    "aspect_ratio": 4.0,
-    "taper_ratio_ru": 2.0,
-    "span": 2.0,
-    "sweep_angle_25": 0.0
+    "stab":{
+        "area": 1.0,
+        "aspect_ratio": 4.0,
+        "taper_ratio_ru": 2.0,
+        "span": 2.0,
+        "sweep_angle_25": 0.0
     },
 
-    "fin":
-    {
-    "area": 1.0,
-    "aspect_ratio": 2.0,
-    "taper_ratio_ru": 1.0,
-    "span": 1.4,
-    "sweep_angle_25": 0.0
+    "fin":{
+        "area": 1.0,
+        "aspect_ratio": 2.0,
+        "taper_ratio_ru": 1.0,
+        "span": 1.4,
+        "sweep_angle_25": 0.0
     },
 
     "lifting_system":
     {
-    "stab_volume_coefficient": 0.51,
-    "stab_arm": 3.2,
-    "fin_volume_coefficient": 0.025,
-    "fin_arm": 3.2,
-    "fins_count": 1
+        "stab_volume_coefficient": 0.51,
+        "stab_arm": 3.2,
+        "fin_volume_coefficient": 0.025,
+        "fin_arm": 3.2,
+        "fins_count": 1
     },
     "speed_range":
     {
         "v_min": 20,
-        "v_max": 120,
-        "v_step": 1
+        "v_max": 100,
+        "v_step": 0.1
     },
     "aerodynamics":
     {
-        "wing_laminarity": 0.5,
-        "wing_cx0_imperfection": 1.2,
+        "wing_laminarity": 0.65,
+        "wing_cx0_imperfection": 1.4,
         "wing_area_wet_to_plan": 2.05,
-        "fuselage_cx0_imperfection": 2.0,
+        "wing_cy_max": 1.4,
+        "fuselage_cx0_imperfection": 2.4,
         "fuselage_laminarity": 0.1,
         "fuselage_area": 8.0,
         "fuselage_length":  5.5,
-        "empennage_laminarity": 0.5,
+        "empennage_laminarity": 0.25,
         "wing_span_eff": 0.95,
         "wing_planform_eff": 0.95
     },
     "masses":
     {
         "toff_mass": 520.0,
-        "empty_mass": 350.0,
-        "fuel_mass": 150.0
+        "empty_mass": 300.0,
+        "fuel_mass": 200.0
     }
 }

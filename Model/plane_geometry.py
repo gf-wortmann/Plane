@@ -12,9 +12,12 @@ class PlaneGeometry:
         self.isa = ISA.ISA()
         self.fuselage_area = 72.0
         self.fuselage_length = 14.0
-        self.engine_nacelle_area = 0.1
-        self.engine_nacelle_length = 0.5
-        self.engine_nacelles_count = 1
+        self.engine_nacelle_area = 1.7
+        self.engine_nacelle_length = 2.2
+        self.engine_nacelles_count = 0
+        # self.engine_nacelle_area = 9.9
+        # self.engine_nacelle_length = 4.5
+        # self.engine_nacelles_count = 2
         
         self.cx_0 = 0.02
         self.masse = 5000
@@ -23,10 +26,10 @@ class PlaneGeometry:
         self.lifting_system.set_lifting_system_general_geometry_2(**ls_gen_params)
     
     def set_fuselage_general_geometry(self, ls_gen_params):
-        params = ls_gen_params["aerodynamics"]
+        params = ls_gen_params["fuselage"]
         # print(f'params = {params}')
-        self.fuselage_area = params["fuselage_area"]
-        self.fuselage_length = params["fuselage_length"]
+        self.fuselage_area = params["area"]
+        self.fuselage_length = params["length"]
     
     def get_wing_MAC(self):
         return self.lifting_system.get_wing_MAC()
