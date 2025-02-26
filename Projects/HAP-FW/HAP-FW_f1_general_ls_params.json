@@ -19,6 +19,11 @@
         "area": 7.3,
         "length": 5.3
     },
+    "nacelles":{
+        "area": 0.01,
+        "length": 0.1,
+        "count": 0
+    },
     "wing":
     {
         "area": 7.70,
