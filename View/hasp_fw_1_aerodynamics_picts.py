@@ -58,17 +58,17 @@ def show_req_power(plane: pa, alt):
     label_min_mass = f'Потребная мощность при массе {plane.mass:.0f}кг. ' r'$P_{min}$ =' f'{plane.max_duration_power / 1000 + electric_power_consumption:.2f}кВт на {plane.max_duration_speed * 3.6:.1f}км/ч'
     
     power_avail_range_nominal = [plane.general_params["power_plant"]["nominal_power_kw"] * prop_effectivity
-                                 * plane.isa.get_engine_relative_power() for x in plane.v_range]
+                                 * plane.isa.get_engine_relative_power_no_corrector() for x in plane.v_range]
     power_avail_range_cruise = [plane.general_params["power_plant"]["cruise_power_kw"] * prop_effectivity
-                                * plane.isa.get_engine_relative_power() for x in plane.v_range]
+                                * plane.isa.get_engine_relative_power_no_corrector() for x in plane.v_range]
     power_avail_range_cruise_2 = [plane.general_params["power_plant"]["cruise_power_2_kw"] * prop_effectivity
-                                  * plane.isa.get_engine_relative_power() for x in plane.v_range]
+                                  * plane.isa.get_engine_relative_power_no_corrector() for x in plane.v_range]
     
     plots = {label_max_mass: [x_range, y_range_max_mass],
              label_min_mass: [x_range, y_range_min_mass],
-             "Располагаемая мощность, номинальный режим": [x_range, power_avail_range_nominal],
-             "Располагаемая мощность, максимальный крейсерский режим": [x_range, power_avail_range_cruise],
-             "Располагаемая мощность, минимальный крейсерский режим": [x_range, power_avail_range_cruise_2]
+             f"Располагаемая мощность, номинальный режим {max(power_avail_range_nominal):.0f} кВт": [x_range, power_avail_range_nominal],
+             f"Располагаемая мощность, максимальный крейсерский режим {max(power_avail_range_cruise):.0f} кВт": [x_range, power_avail_range_cruise],
+             f"Располагаемая мощность, минимальный крейсерский режим {max(power_avail_range_cruise_2):.0f} кВт": [x_range, power_avail_range_cruise_2]
              }
     
     limits = {"xmin": min(x_range), "xmax": max(x_range), "ymin": min(y_range_min_mass) / 2,
@@ -144,7 +144,7 @@ def show_ld_ratio(plane: pa, alt_range: np.arange):
     plots_ld_ratio = {}
     limits_ld_ratio = {}
     data = []
-    index = ["Скорость, км/ч",]
+    index = ["Скорость, км/ч", ]
     
     for alt in alt_range:
         plane.set_altitude(alt)
@@ -161,7 +161,7 @@ def show_ld_ratio(plane: pa, alt_range: np.arange):
         index.append(f"К_а на высоте {alt}м")
     graph_plot(plots_ld_ratio, limits_ld_ratio, title, xlabel, ylabel)
     data.insert(0, plane.v_range)
-    save_to_excel(data, index, title)
+    # save_to_excel(data, index, title)
 
 
 def show_max_duration_speed(plane: pa, alt_range: np.arange):
@@ -170,8 +170,8 @@ def show_max_duration_speed(plane: pa, alt_range: np.arange):
     xlabel = f'Высота, м'
     ylabel = r'$V_нв$, км/ч'
     plots = {}
-    data = [alt_range,]
-    index = ["Высота, м",]
+    data = [alt_range, ]
+    index = ["Высота, м", ]
     # limits = {}
     # x_range = alt_range
     masses = [plane.empty_mass, plane.toff_mass]
@@ -199,7 +199,7 @@ def show_max_duration_speed(plane: pa, alt_range: np.arange):
 
 
 def glider_polar_show(plane: pa):
-    title = plane.general_params["project"]["project_name"] + f' зависимость ' r'$V{_y}$ от $V{_x}$'
+    title = plane.general_params["project"]["project_name"] + '\n' f'зависимость ' r'$V{_y}$ от $V{_x}$'
     xlabel = r'$V_x$, км/ч'
     ylabel = r'$V_y$, м/с'
     plots = {}
@@ -207,7 +207,7 @@ def glider_polar_show(plane: pa):
     vy_range = []
     
     plane.set_altitude(1000)
-    masses = [plane.toff_mass, plane.empty_mass + 150]  #, plane.empty_mass + 10]
+    masses = [plane.toff_mass, plane.toff_mass - plane.fuel_mass]  #, plane.empty_mass + 10]
     
     for _mass in masses:
         # print(f'mass being set = {_mass}')
@@ -216,7 +216,7 @@ def glider_polar_show(plane: pa):
         plane.calculate_aerodynamics()
         # print(f'plane mass = {plane.mass}, ')
         vy_range = -plane.v_range / plane.plane_ld_ratio_range
-        label = f'Масса = {_mass}, ' r'$V_{y_{min}}$ = 'f'{max(vy_range):.2f}м/с, ' r'$К_{а_{max}}$ = '  f'{max(plane.plane_ld_ratio_range):.1f}'
+        label = f'Масса = {_mass}, ' 'm' '\u0305' f' = {_mass / plane.geometry.get_wing_area():.2f}' r'$кг/м^2$, ' r'$V_{y_{min}}$ = 'f'{max(vy_range):.2f}м/с, ' r'$К_{а_{max}}$ = '  f'{max(plane.plane_ld_ratio_range):.1f}'
         plots[label] = [plane.v_range * 3.6, vy_range]
     
     limits = {"xmin": plane.min_speed * 3.6 * 0.5, "xmax": max(plane.v_range) * 3.6 * 1.1
@@ -225,13 +225,61 @@ def glider_polar_show(plane: pa):
     
     graph_plot(plots, limits, title, xlabel, ylabel)
 
-# def cruise_speeds_vs_alt(plane: pa, alt_range: np.arange):
-#     title = plane.general_params["project"]["project_name"] + f' крейсерские скорости по высотам'
-#     xlabel = r'$V_x$, км/ч'
-#     ylabel = r'$V_y$, м/с'
-#     plots = {}
-#     limits = {}
-#     vy_range = []
+
+def cruise_speeds_vs_alt(plane: pa, alt_range: np.arange):
+    title = plane.general_params["project"]["project_name"] + f' крейсерские режимы по высотам'
+    ylabel = 'Высота, м'
+    xlabel = r'$V_{cruise}$, км/ч'
+    xlabel_twin = r'$N_{cruise}$, кВт'
+    plots = {}
+    plots_twin ={}
+    limits = {}
+    v_cruise_range = []
+    v_cruise2_range = []
+    p_cruise_range = []
+    p_cruise2_range = []
+    
+    
+    for alt in alt_range:
+        plane.set_altitude(alt)
+        plane.set_mass(plane.toff_mass - plane.fuel_mass / 2)
+        plane.calculate_aerodynamics()
+        v_cruise_range.append(plane.cruise_speed * 3.6)
+        v_cruise2_range.append(plane.cruise_speed_2 * 3.6)
+        p_cruise_range.append(plane.cruise_power / 1000)
+        p_cruise2_range.append(plane.cruise_power_2 / 1000)
+    
+    plots[r'$V_{cruise}$'] = [v_cruise_range, alt_range]
+    plots[r'$V_{cruise-2}$'] = [v_cruise2_range, alt_range]
+    plots_twin[r'$N_{cruise}$'] = [p_cruise_range, alt_range]
+    plots_twin[r'$N_{cruise-2}$'] = [p_cruise2_range, alt_range]
+    
+    limits= {"ymin": 0, "ymax": max(alt_range) + 500
+        , "xmin": min(v_cruise_range) * 0.5, "xmax": max(v_cruise2_range) * 1.2}
+    
+    graph_plot_twin(plots, plots_twin, limits, title, xlabel, ylabel, xlabel_twin)
+
+
+def graph_plot_twin(plots, plots_twin, limits, plot_title="title", xlabel="xlabel", ylabel="ylabel", xlabel_twin="xlabel_twin"):
+    fg, ax = plt.subplots(figsize=(14, 10))
+    ax1 = ax.twiny()
+    ax1.set(xlabel=xlabel_twin)
+    
+    for label, data in plots.items():
+        ax.plot(data[0], data[1], label=label)
+    for label, data in plots_twin.items():
+        ax1.plot(data[0], data[1], label=label, linestyle="-.")
+    
+    ax.set(title=plot_title, xlabel=xlabel, ylabel=ylabel
+           , xlim=(limits["xmin"] * 0.5, limits["xmax"] * 1.1)
+           , ylim=(limits["ymin"], limits["ymax"] * 1.1)
+           )
+    
+    ax.grid(True)
+    ax.legend()
+
+    # ax1.grid(True)
+    ax1.legend(loc=2)
 
 
 def graph_plot(plots, limits, plot_title="title", xlabel="xlabel", ylabel="ylabel"):
@@ -262,22 +310,23 @@ def graph_plot(plots, limits, plot_title="title", xlabel="xlabel", ylabel="ylabe
 
 
 def save_to_excel(data, index, def_name):
-    file = filedialog.asksaveasfile(initialfile=def_name+'.xlsx', title="Select Excel file to save"
-                                    , filetypes=(("Excel books", "*.xlsx"), ))
+    file = filedialog.asksaveasfile(initialfile=def_name + '.xlsx', title="Select Excel file to save"
+                                    , filetypes=(("Excel books", "*.xlsx"),))
     df = pd.DataFrame(data, index=index)
     df.to_excel(file.name, header=False)
-    
+
 
 # show_req_power(project, 1000)
 # show_req_power(project, 3000)
 # show_req_power(project, 5000)
-# show_req_power(project, 7000)
+show_req_power(project, 7000)
 # show_fuel_consumption(project, 0)
 # show_fuel_consumption(project, 3000)
 # show_fuel_consumption(project, 5000)
 # show_fuel_consumption(project, 7000)
-# show_ld_ratio(project, np.arange(0, 10001, 1000))
+# show_ld_ratio(project, np.arange(1000, 4001, 1000))
 # glider_polar_show(project)
 # show_max_duration_speed(project, np.arange(0, 10001, 1000))
+# cruise_speeds_vs_alt(project, np.arange(0, 4001, 500))
 # save_to_excel(project)
 plt.show()
