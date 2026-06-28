@@ -35,6 +35,9 @@ class Formulae:
     
     def dynamic_pressure(self, v, density):
         return density * v ** 2 / 2
+
+    def speed_by_dynamic_pressure(self, dp, rho):
+        return np.sqrt(2 * dp / rho)
     
     def Re(self, v, size, nu):
         return v * size / nu

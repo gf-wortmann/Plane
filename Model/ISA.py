@@ -91,16 +91,16 @@ class ISA:
             pass
         self.__pressure = 10 ** lg_pressure
         
-        # print(f'pressure({self.__altitude}) = {self.__pressure:.5e}')
+        # print(f' pressure({self.__altitude}) = {self.__pressure:.5e}')
     
     def __calculate_density(self):
         self.__density = self.__pressure / self.__temperature / self.relative_gas_constant
-        # print(f'density at {self.__altitude} = {self.__density:.4e}')
+        # print(f' density at {self.__altitude} = {self.__density:.4e}')
     
     def __calculate_viscosity(self):
         self.__dynamic_viscosity = self.beta_s * self.__temperature ** (3 / 2) / (self.__temperature + self.S)
         self.__cinematic_viscosity = self.__dynamic_viscosity / self.__density
-        # print(f'dynamic viscosity at {self.__altitude} = {self.__dynamic_viscosity}'
+        # print(f' dynamic viscosity at {self.__altitude} = {self.__dynamic_viscosity}'
         #       f' when cinematic viscosity = {self.__cinematic_viscosity}')
     
     def __calculate_engine_relative_power(self):
@@ -149,6 +149,10 @@ class ISA:
     def get_engine_relative_power(self):
         return self.__engine_relative_power
     
+    def get_engine_relative_power_no_corrector(self):
+        return self.get_pressure() / self.pressure_standard_SL
+        # return self.__engine_relative_power * self.get_pressure() / self.pressure_standard_SL
+    
     def get_params_by_altitude(self, altitude):
         self.set_altitude(altitude)
         return self.get_parameters()
@@ -157,17 +161,30 @@ class ISA:
     +++++++++++ end of getters area ++++++++++++
     '''
 
+
 #
 if __name__ == '__main__':
     isa = ISA()
-    p1 = isa.get_params_by_altitude(5000)#['rho']
-    p2 = isa.get_params_by_altitude(10000)#['rho']
+    alt = 000
+    p1 = isa.get_params_by_altitude(alt)  #['rho']
+    # p2 = isa.get_params_by_altitude(10000)  #['rho']
     
-    print(f'params at 5000: {p1}')
-    print(f'params at 10000: {p2}')
-    
+    print(f'params at {alt}: {p1}')
+    # print(f'params at 10000: {p2}')
+
 #     alt_range = np.arange(0.0, 5001.0, 1000.0)
 #     atmosphere_range = [isa.get_params_by_altitude(x) for x in alt_range]
 #     print(atmosphere_range[1]['H'])
 #     for i in atmosphere_range:
 #         print(i['H'], i['rho'], i['nyu'], f'power loss: {(100 * 0.55 * 0.75 - (450 / 20 / 75 * 30)) / i['rel_power'] - 4}')
+# # ++++++++++++++++++
+#     alt_range = np.arange(0, 3000+1, 1000)
+#     for alt in alt_range:
+#         isa.set_altitude(alt)
+#         print(f'altitude = {alt}, relative power through alt corrector = {isa.get_engine_relative_power()}'
+#               f', relative power no corrector = {isa.get_engine_relative_power_no_corrector()}')
+# # +++++++++++++
+#     alt_range = np.arange(8000, 20001, 1000)
+#     for alt in alt_range:
+#         p = isa.get_params_by_altitude(alt)
+#         print(p["H"], p["rho"], isa.density_standard_SL / p["rho"], (isa.density_standard_SL / p["rho"]) ** (2/3))

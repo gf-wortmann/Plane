@@ -15,8 +15,8 @@ class LiftingSystem:
         self.__fin = ls.LiftingSurface()
         self.__fins_count = fins_count
         # +++++++++++++++++++++++++++++++++++
-        self.__tail_arm_ratio = 0.375
-        self.__tail_arm = self.get_wing_span() * self.__tail_arm_ratio
+        self.__span_to_tail_arm_ratio = 0.375
+        self.__tail_arm = self.get_wing_span() * self.__span_to_tail_arm_ratio
         self.__stab_arm = self.__tail_arm
         self.__fin_arm = self.__tail_arm
         self.__stab_volume_coefficient = stab_volume_coefficient
@@ -175,7 +175,7 @@ class LiftingSystem:
     def set_tail_arm(self, tail_arm):
         self.__tail_arm = tail_arm
         if self.__wing.span:
-            self.__tail_arm_ratio = self.__tail_arm / self.__wing.span
+            self.__span_to_tail_arm_ratio = self.__tail_arm / self.__wing.span
         self.__calculated = False
     
     def set_tail_general_geometry(self, stab_arm, fin_arm, stab_volume_coefficient=0.5, fin_volume_coefficient=0.05,

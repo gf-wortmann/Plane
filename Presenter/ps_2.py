@@ -1,8 +1,11 @@
 import sys
 import tkinter as tk
+from tkinter import messagebox, filedialog
+
 from View import initial_form_2 as iform
 from View import lifting_system_dialog_2 as lsd
 from Model import lifting_system as lift
+from Model import reports as rep
 import json
 
 _debug = True
@@ -34,6 +37,17 @@ def callback_func(sender, command):
         # lsw = tk.Toplevel()
         lsd.LiftingSystemCalc(tk.Toplevel(), calculate_lifting_system)
     
+    if command == 'req_power':
+        r = rep.Reports()
+        messagebox.showinfo('Info', 'Select the project *.json file')
+        ff = filedialog.askopenfilename()
+        # print(ff)
+        r.set_general_params(ff)
+        # r.set_general_params("C:/Users/79267/Urban_Univercity/Python_Developer/Plane_Project/Projects/HAP-FW/HAP-FW_electric_T-Motor U15 XXL KV29.json")
+        r.set_plane()
+        r.show_req_power_electric_simplex(3000)
+        
+        
     # pass
 
 

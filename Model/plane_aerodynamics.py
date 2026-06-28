@@ -11,6 +11,13 @@ from Formulae import formulae as ff
 class Aerodynamics:
     
     def __init__(self):
+        self.cruise_cy_1 = None
+        self.cruise_cy_2 = None
+        self.cruise_cy = None
+        self.nominal_power = None
+        self.nominal_speed = None
+        self.cruise_speed_1 = None
+        self.cruise_power_1 = None
         self.cruise_power_2 = None
         self.cruise_speed_2 = None
         self.max_duration_power = None
@@ -48,6 +55,7 @@ class Aerodynamics:
         self.v_range = None
         self.geometry = pg.PlaneGeometry()
         self.isa = isa.ISA()
+        self.engine_isa = isa.ISA()
     
     # ''' setters area    '''
     def set_general_params(self, filename):  #='tst2_general_ls_params.json'):
@@ -63,6 +71,13 @@ class Aerodynamics:
     
     def set_altitude(self, altitude=0.0):
         self.isa.set_altitude(altitude)
+        if self.general_params["power_plant"]["altitude_threshold"] >= self.isa.get_altitude():
+            self.engine_isa.set_altitude(0)
+        else:
+            self.engine_isa.set_altitude(self.isa.get_altitude()
+                                         - self.general_params["power_plant"]["altitude_threshold"]
+                                         )
+        # self.engine_isa.set_altitude()
         self.calculate_aerodynamics()
     
     def set_plane_geometry(self):
@@ -99,8 +114,15 @@ class Aerodynamics:
     
     def calculate_v_range(self):
         p = self.general_params['speed_range']
-        self.v_range = np.arange(p['v_min'], p['v_max'] + p['v_step'], p['v_step'])
-    
+        Q_min = self.wing_loading / self.cy_max
+        rho = self.isa.get_density()
+        V_min = (2 * Q_min / rho) ** 0.5
+        # self.set_wing_loading()
+        # self.calculate_min_speed()
+        # print(f'min speed = {V_min}')
+        # self.v_range = np.arange(p['v_min'], p['v_max'] + p['v_step'], p['v_step'])
+        self.v_range = np.arange(V_min, p['v_max'] + p['v_step'], p['v_step'])
+
     def calculate_Re_range(self, size):
         return self.formulae.Re(self.v_range, size, self.isa.get_cinematic_viscosity())
     
@@ -144,7 +166,7 @@ class Aerodynamics:
         self.fuselage_cx0_range = (self.formulae.schlichting_mixed_cf(self.fuselage_Re_range, pp["fuselage_laminarity"])
                                    * pp["fuselage_cx0_imperfection"])
         self.nacelle_cx0_range = (self.formulae.schlichting_mixed_cf(self.nacelle_Re_range, pp["fuselage_laminarity"])
-                                  * pp["fuselage_cx0_imperfection"])
+                                  * pp["fuselage_cx0_imperfection"] * self.general_params["nacelles"]["count"])
     
     def calculate_plane_cx0_range(self):
         # struts
@@ -205,11 +227,13 @@ class Aerodynamics:
         self.calculate_plane_ld_ratio_range()
         self.calculate_min_speed()
         self.calculate_plane_required_power()
+        self.calculate_max_duration_speed()
+        self.calculate_max_duration_power()
         self.calculate_cruise_regime()
+        self.calculate_cruise_regime_1()
         self.calculate_cruise_regime_2()
         # self.calculate_primary_max_duration_power()
-        # self.calculate_max_duration_speed()
-        self.calculate_max_duration_power()
+        self.calculate_nominal_regime()
     
     def calculate_plane_required_power(self):
         self.plane_required_power_range = (self.plane_full_cx_range * self.dynamic_pressure_range
@@ -219,26 +243,64 @@ class Aerodynamics:
         pt = min(self.plane_required_power_range / self.v_range)
         cruise_speed = 0
         cruise_power = 0
-        for v, n in zip(self.v_range, self.plane_required_power_range):
+        cruise_cy = 0
+        for v, n, cy in zip(self.v_range, self.plane_required_power_range, self.cy_range):
             cruise_speed = v
             cruise_power = n
+            cruise_cy = cy
             if n / v == pt:
                 break
         # print(f'vc = {vv}')
         self.cruise_speed = cruise_speed
-        self.cruise_power = cruise_power
-        
+        self.cruise_power = cruise_power * self.general_params["power_plant"]["prop_effectivity"]
+        self.cruise_cy = cruise_cy
+    
     def calculate_cruise_regime_2(self):
         power_plant = self.general_params["power_plant"]
-        power = power_plant["cruise_power_2_kw"] * power_plant["prop_effectivity"] * self.isa.get_engine_relative_power()
-        for v, n in zip(self.v_range, self.plane_required_power_range):
-            if n / 1000 >= power:
+        power = (power_plant["cruise_power_2_kw"] * power_plant["prop_effectivity"]
+                 * self.engine_isa.get_engine_relative_power())
+        
+        for v, n, cy in zip(self.v_range, self.plane_required_power_range, self.cy_range):
+            if n / 1000 >= power and v > self.min_speed:
                 self.cruise_speed_2 = v
                 self.cruise_power_2 = n
+                self.cruise_cy_2 = cy
                 return
         print(f'Too low max V in V range! Increase!')
-        self.cruise_speed_2 = max(self.v_range)
-        self.cruise_power_2 = max(self.plane_required_power_range)
+        # self.cruise_speed_2 = max(self.v_range)
+        # self.cruise_power_2 = max(self.plane_required_power_range)
+    
+    def calculate_nominal_regime(self):
+        power_plant = self.general_params["power_plant"]
+        power = (power_plant["nominal_power_kw"] * power_plant["prop_effectivity"]
+                 * self.engine_isa.get_engine_relative_power())
+        v_min = min(self.v_range)
+        
+        for v, n in zip(self.v_range, self.plane_required_power_range):
+            if n / 1000 >= power and v >= self.min_speed:
+                self.nominal_speed = v
+                self.nominal_power = power
+                # break
+                return
+
+        print(f'in nominal: Too low max V in V range! Increase!')
+        # self.nominal_speed = max(self.v_range)
+        # self.nominal_power = max(self.plane_required_power_range)
+    
+    def calculate_cruise_regime_1(self):
+        power_plant = self.general_params["power_plant"]
+        power = (power_plant["cruise_power_kw"] * power_plant["prop_effectivity"]
+                 * self.engine_isa.get_engine_relative_power())
+        
+        for v, n, cy in zip(self.v_range, self.plane_required_power_range, self.cy_range):
+            if n / 1000 >= power and v > self.min_speed:
+                self.cruise_speed_1 = v
+                self.cruise_power_1 = n
+                self.cruise_cy_1 = cy
+                return
+        # print(f'Too low max V in V range! Increase!')
+        # self.cruise_speed_1 = max(self.v_range)
+        # self.cruise_power_1 = max(self.plane_required_power_range)
     
     def calculate_max_duration_speed(self):
         # if self.max_primary_duration_power is None:
@@ -325,9 +387,11 @@ if __name__ == '__main__':
     # pa40 = Aerodynamics()
     hap_fw = Aerodynamics()
     hap_fw.set_general_params(
-        'C:/Users/79267/Urban_Univercity/Python_Developer/Plane_Project/Projects/P45_twin_sailplane/3_P45_twin_sailplane_general_ls_params.json')
+        'C:/Users/George/Urban_Univercity/Python_Developer/Plane_Project/Projects/P45_twin_sailplane/3_P45_twin_sailplane_general_ls_params.json')
+    # C:\Users\George\Urban_Univercity\Python_Developer\Plane_Project\Projects\P45_twin_sailplane\3_P45_twin_sailplane_general_ls_params.json
     # hap_fw.set_general_params("../Projects/P45_twin_sailplane/P45_twin_sailplane_general_ls_params.json")
     hap_fw.set_plane_geometry()
+    hap_fw.set_masses()
     hap_fw.set_toff_mass()
     hap_fw.set_empty_mass()
     hap_fw.set_mass(hap_fw.toff_mass)

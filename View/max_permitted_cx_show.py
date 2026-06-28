@@ -49,7 +49,7 @@ for area_loading in e.wgt_to_area_SI_range:
         y = e.cx_max_permitted_vs_speed(area_loading, work_altitude, power_regime) - e.cx_i(work_altitude, area_loading,
                                                                                             aspect_ratio)
         ax.plot(x, y, colors[ci] + line_fonts[lfi],
-                label=(f'n') + '\u0305' + f'= {area_loading / 9.81:.0f} $кгс/м^2$'
+                label=(f'm') + '\u0305' + f'= {area_loading / 9.81:.0f} $кгс/м^2$'
                                           f', \u03BB = {aspect_ratio}'
                 # , path_effects=[pe.withTickedStroke(spacing=5, length=1)]
                 )

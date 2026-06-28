@@ -26,10 +26,14 @@ class PlaneGeometry:
         self.lifting_system.set_lifting_system_general_geometry_2(**ls_gen_params)
     
     def set_fuselage_general_geometry(self, ls_gen_params):
-        params = ls_gen_params["fuselage"]
+        params_fus = ls_gen_params["fuselage"]
+        params_nacelles = ls_gen_params["nacelles"]
         # print(f'params = {params}')
-        self.fuselage_area = params["area"]
-        self.fuselage_length = params["length"]
+        self.fuselage_area = params_fus["area"]
+        self.fuselage_length = params_fus["length"]
+        self.engine_nacelle_area = params_nacelles["area"]
+        self.engine_nacelle_length = params_nacelles["length"]
+        self.engine_nacelles_count= params_nacelles["count"]
     
     def get_wing_MAC(self):
         return self.lifting_system.get_wing_MAC()

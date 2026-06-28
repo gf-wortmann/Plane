@@ -272,17 +272,17 @@ class LiftingSystemCalc:
                 print(f'    yet another arg:', arg)
         self.StabAreaValue.configure(state='normal')
         self.StabAreaValue.delete(0, 'end')
-        self.StabAreaValue.insert(0, f'{result["stab_area"]:.2f}')
+        self.StabAreaValue.insert(0, f'{result["stab_area"]:.4f}')
         self.StabAreaValue.configure(state='readonly')
         
         self.FinAreaValue.configure(state='normal')
         self.FinAreaValue.delete(0, 'end')
-        self.FinAreaValue.insert(0, f'{result["fin_area"]:.2f}')
+        self.FinAreaValue.insert(0, f'{result["fin_area"]:.4f}')
         self.FinAreaValue.configure(state='readonly')
         
         self.WingSpanValue.configure(state='normal')
         self.WingSpanValue.delete(0, 'end')
-        self.WingSpanValue.insert(0, f'{result["wing_span"]:.2f}')
+        self.WingSpanValue.insert(0, f'{result["wing_span"]:.4f}')
         self.WingSpanValue.configure(state='readonly')
 
 

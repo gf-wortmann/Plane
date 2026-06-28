@@ -53,8 +53,9 @@ class InitialForm:
         self.sub_menu1.add_command(command=self.lifting_system_pressed
                                    , compound='left', font="-family {Segoe UI} -size 9"
                                    , label='Lifting System')
-        self.sub_menu1.add_command(compound='left'
-                                   , font="-family {Segoe UI} -size 9", label='Polar')
+        self.sub_menu1.add_command(command=self.req_power_pressed
+                                   , compound='left'
+                                   , font="-family {Segoe UI} -size 9", label='Req Power')
         
         # self.sub_menu1.
 
@@ -73,7 +74,8 @@ class InitialForm:
         # self.callback(self.top, args)
         self.callback(self.top, 'lifting_system')
     
-    
+    def req_power_pressed(self):
+        self.callback(self.top, 'req_power')
 
 # def start_dialog():
 #     ps.start_dialog()

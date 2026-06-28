@@ -24,6 +24,10 @@ class Reports:
         v_min = self.plane.min_speed
     
     def show_req_power_electric_simplex(self, alt):
+        data = self.calc_req_power_electric_simplex(alt)
+        self.graph_plot(*data)
+        
+    def calc_req_power_electric_simplex(self, alt):
         plane = self.plane
         electric_power_consumption = plane.general_params["power_plant"]["electric_power_consumption"]  # kW
         prop_effectivity = plane.general_params["power_plant"]["prop_effectivity"]
@@ -59,7 +63,8 @@ class Reports:
         limits = {"xmin": min(x_range), "xmax": max(x_range), "ymin": min(y_range_min_mass) / 2,
                   "ymax": plane.general_params["power_plant"][
                               "nominal_power_kw"] * 1.5}
-        self.graph_plot(plots, limits, title, xlabel, ylabel)
+        return plots, limits, title, xlabel, ylabel
+        # self.graph_plot(plots, limits, title, xlabel, ylabel)
     
     def show_climb_on(self, alt):
         
@@ -107,6 +112,7 @@ class Reports:
         limits = {"xmin": 0, "xmax": max(time_acc_hr), "ymin": 0, "ymax": (max(alt_range) * 1.2)}
         
         self.graph_plot(plots, limits, title, xlabel, ylabel)
+        self.graph_plot(plots, limits, title, xlabel, ylabel)
     
     def graph_plot(self, plots, limits, plot_title="title", xlabel="xlabel", ylabel="ylabel"):
         fg, ax = plt.subplots(figsize=(14, 10))
@@ -136,7 +142,7 @@ if __name__ == "__main__":
     #     "C:/Users/79267/Urban_Univercity/Python_Developer/Plane_Project/Projects/HAP-FW/HAP-FW_electric_M100.json")
     rep.set_plane()
     print(rep.plane.toff_mass)
-    rep.show_req_power_electric_simplex(0)
-    rep.show_req_power_electric_simplex(10000)
+    rep.show_req_power_electric_simplex(3000)
+    # rep.show_req_power_electric_simplex(10000)
     # rep.show_climb_on(10000)
    
